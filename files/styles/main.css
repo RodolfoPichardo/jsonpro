@@ -1,0 +1,62 @@
+header {
+	width: 100%;
+	height: 40px;
+	background: yellow;
+}
+
+main {
+	position:absolute;
+	top:40px; /* Must be same as header height */
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow: scroll;
+}
+
+main pre {
+	min-height: calc(100% - 20px); /* Removing the padding from the equation*/
+	height: fit-content;
+	font-size: 0.9em;
+	line-height: 1.2em;
+	padding: 10px;
+	outline: none;
+	font-family: "Consolas", monospace;
+}
+
+#wrapper {
+	width: 100%;
+	height: 100%;
+	flex: 1;
+    		display: flex;
+}
+
+#lines {
+	padding-left: 14px;
+	min-width: 24px;
+	width: auto;
+	color: #888;
+	border-width: 0 1px 0 0;
+	border-style: solid;
+	border-color: #CCC;
+	text-align: right;
+	user-select: none;
+}
+
+#code {
+	flex: 1;
+	align-self: stretch;
+}
+
+.active {
+	color: red;
+}
+
+#line-highlight {
+	display: block;
+	width: 24px;
+	height: 1.2em;
+	position: absolute;
+	top: -2020px;
+	left: 0px;
+	background-color: #ccc;
+}

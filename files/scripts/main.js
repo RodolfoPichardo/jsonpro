@@ -1,24 +1,26 @@
+const isChrome = navigator.userAgent.includes("Chrome");
+
 window.onload = function(e) {
-	let code_pre = document.getElementById("code");
-	code_pre.addEventListener("input", function(event) {
+	let editor = document.getElementById("code");
+	if(!isChrome) {
+		editor.innerHTML = '&#8203;';
+	}
+
+	editor.addEventListener("input", function(event) {
 		recomputeLines(event.target);
 	});
 
-	let lineHighlight = document.getElementById('line-highlight');
-	code_pre.addEventListener('keyup', function(event) {
-		const line_number = getCaretPosition(code_pre);
-		console.log(line_number);
-	});
+	editor.addEventListener('keydown', function(event) {
+	    if (event.keyCode == 13) { // Enter key
+	    	const newLine = isChrome? '\n\n': '\n';
+	    	document.execCommand('insertHTML', false, newLine);
+	      
+	    	// prevent the default behaviour of return key pressed
+	    	event.preventDefault();
+	    	return false;
+	    }
+ 	});
 };
-
-function getCaretPosition(element) {
-  const selection = window.getSelection();
-  const range = selection.getRangeAt(0);
-  const caretPosition = range.startOffset;
-  return caretPosition;
-}
-
-
 
 /**
  ****************************************************** 
@@ -65,26 +67,3 @@ var calculateLines = function(dom) {
 		return count;
 	}
 };
-
-
-
-/*var getCaretPosition = function(){
-    const range = document.getSelection().getRangeAt(0);
-    const node = range.startContainer;
-    console.log(range.startContainer.getBoundingClientRect());
-    const offset = range.startOffset;
-    const scrollOffset = document.querySelector("main").scrollTop;
-
-
-    //let bottomPosition,  fakeRange;
-    if (offset > 0) {
-    	// Create fake selection to get the actual size
-        const fakeRange = document.createRange();
-        fakeRange.setStart(node, (offset - 1));
-        fakeRange.setEnd(node, range.startOffset);
-        const position = fakeRange.getBoundingClientRect().bottom;
-        return position + scrollOffset; //window.pageYOffset;;
-    } else {
-    	return -1000; // TODO return line one
-    }
-};*/

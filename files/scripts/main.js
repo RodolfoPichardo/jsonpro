@@ -2,7 +2,7 @@ const isChrome = navigator.userAgent.includes("Chrome");
 
 window.onload = function(e) {
 	let editor = document.getElementById("code");
-	if(!isChrome) {
+	if(!isChrome && editor.innerText.length === 0) {
 		editor.innerHTML = '&#8203;';
 	}
 
@@ -17,14 +17,37 @@ window.onload = function(e) {
 	    	document.execCommand('insertHTML', false, newLine);*/
 	    	event.preventDefault();
 	    	return false;
-	    } else if(event.keyCode >= 33 && event.keyCode <= 40) {
-	    	; // Do nothing
+	    } else if(event.ctrlKey || event.keyCode >= 33 && event.keyCode <= 40) {
+	    	; // Allow things to happen
 	    } else {
 	    	event.preventDefault();
 	    	return false;
 	    }
 	    
  	});
+
+ 	editor.addEventListener('paste', function(e) {
+ 		
+		document.getElementById("punctuation").innerText = '';
+		document.getElementById("attr").innerText = '';
+		document.getElementById("string").innerText = '';
+		document.getElementById("number").innerText = '';
+		document.getElementById("literal").innerText = '';
+		
+
+
+        var text = e.clipboardData.getData('text/plain');
+                   
+        // Do whatever you want with the text
+        console.log("Received:", typeof text, " ", text.length);
+        
+        parseJson(text, this);
+        
+        //If you don't want the text pasted in the textarea
+        e.preventDefault();
+    });
+
+ 	parseJson('{"instructions":"Paste your JSON here","test":"this","number":1,"success":true}');
 };
 
 /**
@@ -71,4 +94,26 @@ var calculateLines = function(dom) {
 		const count = Math.max(lines, 1);
 		return count;
 	}
+};
+
+
+var parseJson = function(json) {
+	const doms = {
+		punctuation: document.getElementById("punctuation"),
+		attr: document.getElementById("attr"),
+		string: document.getElementById("string"),
+		number: document.getElementById("number"),
+		literal: document.getElementById("literal")
+	};
+
+    if (window.Worker) {
+        const jsonParserWorker = new Worker("files/scripts/worker.js");
+        jsonParserWorker.onmessage = function(e) {
+            for(const prop in e.data) {
+            	doms[prop].append(e.data[prop]);
+            }
+        };
+        
+        jsonParserWorker.postMessage(json);
+    } 
 };

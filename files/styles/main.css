@@ -104,3 +104,11 @@ main pre {
 #string {
 	color: #5EBD3E;
 }
+
+#number {
+	color: #009CDF;
+}
+
+#literal {
+	color: #973999;
+}

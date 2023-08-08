@@ -1,22 +1,40 @@
-header {
-	width: 100%;
+footer {
 	height: 40px;
 	background: #ddd;
 	font-family: sans-serif;
 	color: #333;
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
 }
 
-header p {
+footer p {
 	padding: 10px 20px;
 }
 
 main {
 	position:absolute;
-	top:40px; /* Must be same as header height */
+	top:0; /* Must be same as header height */
 	left: 0;
 	right: 0;
-	bottom: 0;
+	bottom: 40px;
 	overflow: scroll;
+}
+
+main #layer-group {
+	min-height: 100%;/* - 20px);*/ 
+	height: fit-content;
+	flex: 1;
+	align-self: stretch;
+	display: flex;
+}
+
+
+main #layer-group pre{
+	min-height: calc(100vh - 80px);
+	height: fit-content;
+	position: absolute;
 }
 
 main pre {
@@ -27,6 +45,8 @@ main pre {
 	padding: 10px;
 	outline: none;
 	font-family: "Consolas", monospace;
+	align-self: stretch;
+	user-select: none;
 }
 
 #wrapper {
@@ -50,9 +70,37 @@ main pre {
 
 #code {
 	flex: 1;
-	align-self: stretch;
+	color: rgba(0, 0, 0, 0);
+	caret-color: #222;
+	z-index: 9999;
+	user-select: text;
+	min-width: calc(100% - 90px);
+}
+
+#code::-moz-selection { /* Code for Firefox */
+  color: #222;
+  background-color: #bbb;
+  border: 1px solid #777;
+}
+
+#code::selection {
+  color: #222;
+  background-color: #bbb;
+  border: 1px solid #777;
 }
 
 #code::after {
 	content: '\200B'; /* Zero-width space */
+}
+
+#punctuation {
+	color: #777;
+}
+
+#attr { 
+	color: #F78200;
+}
+
+#string {
+	color: #5EBD3E;
 }

@@ -4,16 +4,23 @@
 	<script src="files/scripts/main.js" defer></script>
 	<link href="Https://cdn.jsdelivr.net/npm/reset-css@5.0.2/reset.min.css" rel="stylesheet">
 	<link href="files/styles/main.css" rel="stylesheet">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-	<header>
-		<p>v0.1</p>
-	</header>
+	
 	<main>
 		<div id="wrapper">
 			<pre id="lines">1</pre>
-			<pre id="code" contenteditable="true" spellcheck="false" autofocus="true"></pre>
+			<div id="layer-group">
+				<pre id="code" contenteditable="true" spellcheck="false" autofocus="true">{"hello": "world"}</pre>
+				<pre id="punctuation">{       :        }</pre>
+				<pre id="attr"> "hello"</pre>
+				<pre id="string">          "world"</pre>
+			</div>
 		</div>
-	</main>  
+	</main> 
+	<footer>
+		<p>v0.2</p>
+	</footer>
 </body>
 </html>

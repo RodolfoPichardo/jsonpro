@@ -11,14 +11,19 @@ window.onload = function(e) {
 	});
 
 	editor.addEventListener('keydown', function(event) {
+		// TODO SCROLL
 	    if (event.keyCode == 13) { // Enter key
-	    	const newLine = isChrome? '\n\n': '\n';
-	    	document.execCommand('insertHTML', false, newLine);
-	      
-	    	// prevent the default behaviour of return key pressed
+	    	/*const newLine = isChrome? '\n\n': '\n';
+	    	document.execCommand('insertHTML', false, newLine);*/
+	    	event.preventDefault();
+	    	return false;
+	    } else if(event.keyCode >= 33 && event.keyCode <= 40) {
+	    	; // Do nothing
+	    } else {
 	    	event.preventDefault();
 	    	return false;
 	    }
+	    
  	});
 };
 

@@ -57,6 +57,11 @@ window.onload = function(e) {
 var recomputeLines = function(dom) {
 	number_of_lines = calculateLines(dom);
 	
+	displayLines(dom, number_of_lines);
+};
+
+var displayLines = function(dom, number_of_lines) {
+	
 	// FIXME is this actually better than just always recomputing all the lines
 	if(dom.number_of_lines <= number_of_lines) {
 		let i = dom.number_of_lines + 1 ?? 1;
@@ -106,13 +111,15 @@ var parseJson = function(json) {
 		code: document.getElementById("code"),
 	};
 
+	const lines = document.getElementById("lines");
+
     if (window.Worker) {
         const jsonParserWorker = new Worker("files/scripts/worker.js");
         jsonParserWorker.onmessage = function(e) {
-            for(const prop in e.data) {
-            	console.log(prop);
-            	doms[prop].append(e.data[prop]);
+            for(const prop in e.data.data) {
+            	doms[prop].append(e.data.data[prop]);
             }
+            displayLines(lines, e.data.lines);
         };
         
         jsonParserWorker.postMessage(json);

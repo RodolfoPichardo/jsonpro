@@ -11,6 +11,7 @@ class JSONParser {
     this.jsonText = str;
     this.index = 0;
     this.indentLevel = 0;
+    this.lineNumber = 0;
     this.responseBuffer = {
       punctuation: '',
       attr: '',
@@ -328,7 +329,7 @@ handleArray() {
       if(escaped || char != '"') {
         str += char !== '\\'? char: char+char;
       } else {
-        this.add('"' + str + '"', 'string');
+        this.add('"' + str + '"', className);
         this.index++;
         return;
       }
@@ -343,6 +344,7 @@ handleArray() {
   /* Helper functions */
 
   addNewLine(text, target, indent=false) {
+    this.lineNumber++;
     this.responseBuffer[target] += text;
     this.responseBuffer.code += text;
     if(indent) this.indentLevel++;
@@ -352,6 +354,7 @@ handleArray() {
   }
 
   addNewLineBefore(text, target) {
+    this.lineNumber++;
     for(const prop in this.responseBuffer) {
       this.responseBuffer[prop] += '\n' + ' '.repeat(this.indentLevel*4);
     }
@@ -377,7 +380,10 @@ handleArray() {
   }
 
   sendBuffer() {
-    postMessage(this.responseBuffer);
+    postMessage({
+      lines: this.lineNumber + 1,
+      data: this.responseBuffer
+    });
     for(const prop in this.responseBuffer) {
       this.responseBuffer[prop] = '';
     }

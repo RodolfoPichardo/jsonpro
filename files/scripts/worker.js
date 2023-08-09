@@ -3,18 +3,6 @@ onmessage = function(e) {
   const parser = new JSONParser(text);
   parser.run();
   parser.sendBuffer();
-
-  /*const responseBuffer = {
-    punctuation: '{\n                  :\n}',
-    attr: '\n    "instructions"',
-    string: '\n                   "Paste your JSON here"',
-    number: '',
-    literal: ''
-  };
-
-  postMessage(responseBuffer);*/
-
-
 }
 
 
@@ -22,14 +10,14 @@ class JSONParser {
   constructor(str) {
     this.jsonText = str;
     this.index = 0;
-    //this.lineNumber = 0;
+    this.indentLevel = 0;
     this.responseBuffer = {
       punctuation: '',
       attr: '',
       string: '',
       number: '',
       literal: '',
-      //code: '',
+      code: '',
     }
   }
 
@@ -38,12 +26,12 @@ class JSONParser {
     
     switch(this.jsonText.charAt(this.index)) {
       case '{':
-        this.addNewLine('{', 'punctuation');
+        this.addNewLine('{', 'punctuation', true);
         this.index++;
         this.handleObject();
         break;
       case '[':
-        this.addNewLine('[', 'punctuation');
+        this.add('[', 'punctuation'); // FIXME don't add new line
         this.index++;
         this.handleArray();
         break;
@@ -61,6 +49,7 @@ class JSONParser {
   handleObject() {
     this.handleWhitespaces();
 
+    //this.indentLevel++;
     let expectValueSeparator = false;
     for(; this.index < this.jsonText.length;) {// i++) {
       this.handleWhitespaces();
@@ -81,7 +70,6 @@ class JSONParser {
       
       switch(char) {
       case '"': // New key value
-        this.responseBuffer.attr += '"';
         this.index++;
         this.handleKey(); // FIXME return keylength
         this.handleWhitespaces();
@@ -89,27 +77,18 @@ class JSONParser {
           this.error("Expecting sepator got " + this.jsonText.charAt(this.index) + " at position " + this.index);
         }
         
-        this.responseBuffer.punctuation += ':';
-        this.responseBuffer.number += ' ';
-        this.responseBuffer.string += ' ';
-        this.responseBuffer.literal += ' ';
+        this.add(':', 'punctuation');
         this.index++;
-        
         this.handleWhitespaces();
         this.handleValue();
         expectValueSeparator = true;
         break;
       case "}": // End of object
-        this.addNewLine('}', 'punctuation');
+        this.indentLevel--;
+        this.addNewLineBefore('}', 'punctuation');
         this.index++;
         this.sendBufferIfFull();
         return;
-        /*if(responseBuffer.length >= 1000) {
-          //await sleep(2000);
-          postMessage(responseBuffer);
-          responseBuffer.length = 0;
-        }*/
-        //this.index++;
       default:
         this.error("Exception either a new member or the end of the object, but got " + char + " at postion " + this.index);
       }
@@ -128,14 +107,14 @@ handleArray() {
   for(; this.index < this.jsonText.length;){// i++) {
     const char = this.jsonText.charAt(this.index);
     if(char === ']') {
-      this.responseBuffer.punctuation += ']';
+      this.add(']', 'punctuation');
       this.sendBufferIfFull();
       this.index++;
       return;
     }
     if(expectValueSeparator) {
       if(char === ',') {
-        this.responseBuffer.punctuation += ',';
+        this.add(',', 'punctuation');
         this.index++;
         this.handleWhitespaces();
       } else {
@@ -177,12 +156,12 @@ handleArray() {
       this.handleKeyword();
       break
     case '{':
-      this.addNewLine('{', 'punctuation');
+      this.addNewLine('{', 'punctuation', true);
       this.index++;
       this.handleObject();
       break;
     case '[':
-      this.addNewLine('[', 'punctuation');
+      this.add('[', 'punctuation');
       this.index++;
       this.handleArray();
       break;
@@ -200,7 +179,6 @@ handleArray() {
       this.handleNumber();
       break;
     case '"':
-      this.responseBuffer.string += '"';
       this.index++;
       this.handleString();
       break;
@@ -232,8 +210,7 @@ handleArray() {
       }
     }
 
-    this.responseBuffer.literal += word;
-    this.responseBuffer.punctuation += ' '.repeat(word.length);
+    this.add(word, 'literal');
 
     this.index += word.length;
   }
@@ -283,8 +260,7 @@ handleArray() {
       number += this.handleOneStarDigits();
     }
 
-    this.responseBuffer.number += number;
-    this.responseBuffer.punctuation += ' '.repeat(number.length);
+    this.add(number, 'number');
   }
 
   /**
@@ -352,12 +328,7 @@ handleArray() {
       if(escaped || char != '"') {
         str += char !== '\\'? char: char+char;
       } else {
-        this.responseBuffer[className] += str + '"';
-        const offset = ' '.repeat(str.length + 2)
-        this.responseBuffer.punctuation += offset;
-        this.responseBuffer.number += offset;
-        this.responseBuffer.string += offset;
-        this.responseBuffer.literal += offset;
+        this.add('"' + str + '"', 'string');
         this.index++;
         return;
       }
@@ -371,10 +342,31 @@ handleArray() {
 
   /* Helper functions */
 
-  addNewLine(text, target) {
+  addNewLine(text, target, indent=false) {
     this.responseBuffer[target] += text;
+    this.responseBuffer.code += text;
+    if(indent) this.indentLevel++;
     for(const prop in this.responseBuffer) {
-      this.responseBuffer[prop] += '\n';
+      this.responseBuffer[prop] += '\n' + ' '.repeat(this.indentLevel*4);
+    }
+  }
+
+  addNewLineBefore(text, target) {
+    for(const prop in this.responseBuffer) {
+      this.responseBuffer[prop] += '\n' + ' '.repeat(this.indentLevel*4);
+    }
+    this.responseBuffer[target] += text;
+    this.responseBuffer.code += text;
+  }
+
+  add(text, target) {
+    this.responseBuffer[target] += text;
+    this.responseBuffer.code += text;
+    const offset = ' '.repeat(text.length);
+    for(const prop in this.responseBuffer) {
+      if(prop !== target && prop !== 'code') {
+        this.responseBuffer[prop] += offset;
+      }
     }
   }
 
@@ -386,11 +378,9 @@ handleArray() {
 
   sendBuffer() {
     postMessage(this.responseBuffer);
-    this.responseBuffer.punctuation = '';
-    this.responseBuffer.number = '';
-    this.responseBuffer.string = '';
-    this.responseBuffer.literal = '';
-    this.responseBuffer.attr = '';
+    for(const prop in this.responseBuffer) {
+      this.responseBuffer[prop] = '';
+    }
   }
 
   error(str) {

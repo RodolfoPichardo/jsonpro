@@ -33,9 +33,8 @@ window.onload = function(e) {
 		document.getElementById("string").innerText = '';
 		document.getElementById("number").innerText = '';
 		document.getElementById("literal").innerText = '';
+		document.getElementById("code").innerText = '';
 		
-
-
         var text = e.clipboardData.getData('text/plain');
                    
         // Do whatever you want with the text
@@ -103,13 +102,15 @@ var parseJson = function(json) {
 		attr: document.getElementById("attr"),
 		string: document.getElementById("string"),
 		number: document.getElementById("number"),
-		literal: document.getElementById("literal")
+		literal: document.getElementById("literal"),
+		code: document.getElementById("code"),
 	};
 
     if (window.Worker) {
         const jsonParserWorker = new Worker("files/scripts/worker.js");
         jsonParserWorker.onmessage = function(e) {
             for(const prop in e.data) {
+            	console.log(prop);
             	doms[prop].append(e.data[prop]);
             }
         };

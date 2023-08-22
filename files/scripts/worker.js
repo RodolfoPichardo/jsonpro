@@ -5,21 +5,99 @@ onmessage = function(e) {
   parser.sendBuffer();
 }
 
+class Buffer {
+  constructor() {
+    this.success = true;
+    this.indent_level = 0;
+    this.line_number = 0;
+    this.position = 0;
+    this.basic_size = 0;
+    this.emptyResponse();
+    this.last_modified = {
+      punctuation: -1,
+      attr: -1,
+      string: -1,
+      number: -1,
+      literal: -1
+    }
+  }
 
-class JSONParser {
-  constructor(str) {
-    this.jsonText = str;
-    this.index = 0;
-    this.indentLevel = 0;
-    this.lineNumber = 0;
-    this.responseBuffer = {
+  add(text, target) {
+    if(this.last_modified[target] !== this.line_number) {
+      this.response[target] += '\t'.repeat(this.indent_level) + ' '.repeat(this.position);
+      this.last_modified[target] = this.line_number;
+    }
+    if(this.last_modified.code !== this.line_number) { // New line detected
+      this.response.code += '\t'.repeat(this.indent_level);
+      this.last_modified.code = this.line_number;
+    }
+    if(target !== 'punctuation' && this.last_modified.punctuation === this.line_number) {
+      this.response.punctuation += ' '.repeat(text.length);
+    }
+
+    this.response[target] += text;
+    this.response.code += text;
+    this.position += text.length;
+    this.basic_size += text.length;
+  }
+
+  addNewLine(text, target, indent=false) {
+    this.add(text, target);
+    if(indent) this.indent_level++;
+    this._addNewLine();
+  }
+
+  addNewLineBefore(text, target) {
+    this.indent_level--;
+    this._addNewLine();
+    this.add(text, target);
+  }
+
+  _addNewLine() {
+    this.line_number++;
+    for(const prop in this.response) {
+      this.response[prop] += '\n';
+    }
+    this.position = 0;
+  }
+
+  flush() {
+    this.sendBuffer();
+    this.emptyResponse();
+    this.basic_size = 0;
+  }
+
+  isFull() {
+    return this.basic_size > 4096;
+  }
+
+  sendBuffer() {
+    postMessage({
+      lines: this.line_number + 1,
+      data: this.response
+    });
+  }
+
+  emptyResponse() {
+    this.response = {
       punctuation: '',
       attr: '',
       string: '',
       number: '',
       literal: '',
       code: '',
-    }
+    };
+  }
+}
+
+
+
+
+class JSONParser {
+  constructor(str) {
+    this.jsonText = str;
+    this.index = 0;
+    this.buffer = new Buffer();
   }
 
   run() {
@@ -27,12 +105,12 @@ class JSONParser {
     
     switch(this.jsonText.charAt(this.index)) {
       case '{':
-        this.addNewLine('{', 'punctuation', true);
+        this.buffer.addNewLine('{', 'punctuation', true);
         this.index++;
         this.handleObject();
         break;
       case '[':
-        this.add('[', 'punctuation'); // FIXME don't add new line
+        this.buffer.add('[', 'punctuation'); // FIXME don't add new line
         this.index++;
         this.handleArray();
         break;
@@ -50,7 +128,6 @@ class JSONParser {
   handleObject() {
     this.handleWhitespaces();
 
-    //this.indentLevel++;
     let expectValueSeparator = false;
     for(; this.index < this.jsonText.length;) {// i++) {
       this.handleWhitespaces();
@@ -62,7 +139,7 @@ class JSONParser {
         } else if(char !== ',') {
           this.error("Expected value separator, but got " + char.charCodeAt(0) + " at position " + this.index);
         } else {
-          this.addNewLine(',', 'punctuation');
+          this.buffer.addNewLine(',', 'punctuation');
           this.index++;
           this.handleWhitespaces();
           char = this.jsonText.charAt(this.index);
@@ -78,15 +155,14 @@ class JSONParser {
           this.error("Expecting sepator got " + this.jsonText.charAt(this.index) + " at position " + this.index);
         }
         
-        this.add(':', 'punctuation');
+        this.buffer.add(':', 'punctuation');
         this.index++;
         this.handleWhitespaces();
         this.handleValue();
         expectValueSeparator = true;
         break;
       case "}": // End of object
-        this.indentLevel--;
-        this.addNewLineBefore('}', 'punctuation');
+        this.buffer.addNewLineBefore('}', 'punctuation');
         this.index++;
         this.sendBufferIfFull();
         return;
@@ -108,14 +184,14 @@ handleArray() {
   for(; this.index < this.jsonText.length;){// i++) {
     const char = this.jsonText.charAt(this.index);
     if(char === ']') {
-      this.add(']', 'punctuation');
+      this.buffer.add(']', 'punctuation');
       this.sendBufferIfFull();
       this.index++;
       return;
     }
     if(expectValueSeparator) {
       if(char === ',') {
-        this.add(',', 'punctuation');
+        this.buffer.add(',', 'punctuation');
         this.index++;
         this.handleWhitespaces();
       } else {
@@ -157,12 +233,12 @@ handleArray() {
       this.handleKeyword();
       break
     case '{':
-      this.addNewLine('{', 'punctuation', true);
+      this.buffer.addNewLine('{', 'punctuation', true);
       this.index++;
       this.handleObject();
       break;
     case '[':
-      this.add('[', 'punctuation');
+      this.buffer.add('[', 'punctuation');
       this.index++;
       this.handleArray();
       break;
@@ -211,7 +287,7 @@ handleArray() {
       }
     }
 
-    this.add(word, 'literal');
+    this.buffer.add(word, 'literal');
 
     this.index += word.length;
   }
@@ -261,7 +337,7 @@ handleArray() {
       number += this.handleOneStarDigits();
     }
 
-    this.add(number, 'number');
+    this.buffer.add(number, 'number');
   }
 
   /**
@@ -329,7 +405,7 @@ handleArray() {
       if(escaped || char != '"') {
         str += char !== '\\'? char: char+char;
       } else {
-        this.add('"' + str + '"', className);
+        this.buffer.add('"' + str + '"', className);
         this.index++;
         return;
       }
@@ -342,51 +418,14 @@ handleArray() {
 
 
   /* Helper functions */
-
-  addNewLine(text, target, indent=false) {
-    this.lineNumber++;
-    this.responseBuffer[target] += text;
-    this.responseBuffer.code += text;
-    if(indent) this.indentLevel++;
-    for(const prop in this.responseBuffer) {
-      this.responseBuffer[prop] += '\n' + ' '.repeat(this.indentLevel*4);
-    }
-  }
-
-  addNewLineBefore(text, target) {
-    this.lineNumber++;
-    for(const prop in this.responseBuffer) {
-      this.responseBuffer[prop] += '\n' + ' '.repeat(this.indentLevel*4);
-    }
-    this.responseBuffer[target] += text;
-    this.responseBuffer.code += text;
-  }
-
-  add(text, target) {
-    this.responseBuffer[target] += text;
-    this.responseBuffer.code += text;
-    const offset = ' '.repeat(text.length);
-    for(const prop in this.responseBuffer) {
-      if(prop !== target && prop !== 'code') {
-        this.responseBuffer[prop] += offset;
-      }
-    }
-  }
-
   sendBufferIfFull() {
-    if(this.responseBuffer.punctuation.length > 512) {
+    if(this.buffer.isFull()) {
       this.sendBuffer();
     }
   }
 
   sendBuffer() {
-    postMessage({
-      lines: this.lineNumber + 1,
-      data: this.responseBuffer
-    });
-    for(const prop in this.responseBuffer) {
-      this.responseBuffer[prop] = '';
-    }
+    this.buffer.flush();
   }
 
   error(str) {

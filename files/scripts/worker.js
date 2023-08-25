@@ -1,13 +1,19 @@
 onmessage = function(e) {
   const text = e.data;
   const parser = new JSONParser(text);
-  parser.run();
-  parser.sendBuffer();
+  try {
+    parser.run();
+    parser.sendBuffer();
+  } catch(error) {
+    parser.sendBuffer();
+
+  }
 }
 
 class Buffer {
   constructor() {
     this.success = true;
+    this.error = null;
     this.indent_level = 0;
     this.line_number = 0;
     this.position = 0;
@@ -71,10 +77,22 @@ class Buffer {
     return this.basic_size > 4096;
   }
 
+  addError(position, expecting, actual) {
+    this.error = {
+      position: position,
+      expecting: expecting,
+      actual: actual
+    }
+
+    throw Error(`Error parsing JSON at position ${position}, expecting: "${expecting}", actual: "${actual}"`)
+  }
+
   sendBuffer() {
     postMessage({
+      success: this.success,
       lines: this.line_number + 1,
-      data: this.response
+      data: this.response,
+      error: this.error
     });
   }
 
@@ -115,7 +133,10 @@ class JSONParser {
         this.handleArray();
         break;
       default:
-        this.error("Unexpected charater when expecting either { or [. " + this.jsonText.charAt(this.index) + " at position " + this.index);
+        this.buffer.addError(this.index, 
+            "Start of array (square bracket) or start of object (curly bracket)",
+            '<b>' + this.jsonText.charAt(this.index)  + '</b>' + this.jsonText.substring(this.index + 1, 16)
+        );
     }
 
     this.handleWhitespaces();
@@ -137,7 +158,10 @@ class JSONParser {
         if(char === '}') {
 
         } else if(char !== ',') {
-          this.error("Expected value separator, but got " + char.charCodeAt(0) + " at position " + this.index);
+          this.buffer.addError(this.index, 
+            "Value separator (comma)",
+            `<b>${char}</b>` + this.jsonText.substring(this.index + 1, 16)
+          );
         } else {
           this.buffer.addNewLine(',', 'punctuation');
           this.index++;
@@ -152,7 +176,10 @@ class JSONParser {
         this.handleKey(); // FIXME return keylength
         this.handleWhitespaces();
         if(this.jsonText.charAt(this.index) !== ':') {
-          this.error("Expecting sepator got " + this.jsonText.charAt(this.index) + " at position " + this.index);
+          this.buffer.addError(this.index, 
+            "Member separator (colon)",
+            '<b>' + this.jsonText.charAt(this.index)  + '</b>' + this.jsonText.substring(this.index + 1, 16)
+          );
         }
         
         this.buffer.add(':', 'punctuation');
@@ -167,9 +194,8 @@ class JSONParser {
         this.sendBufferIfFull();
         return;
       default:
-        this.error("Exception either a new member or the end of the object, but got " + char + " at postion " + this.index);
+        this.buffer.addError(this.index, "New member or end of object", this.jsonText.substring(this.index, 16)) 
       }
-
     }
   }
 
@@ -195,7 +221,7 @@ handleArray() {
         this.index++;
         this.handleWhitespaces();
       } else {
-        error("Expecting value separator but found " + char + " at position " + this.index);
+        this.buffer.addError(this.index, "Value separator (comma)", this.jsonText.substring(this.index, 16));
       } 
     }
     this.handleValue();
@@ -203,7 +229,7 @@ handleArray() {
     expectValueSeparator = true;
   }
 
-  error("Unexpected end of file while waiting for the end of the array");
+  this.buffer.addError(this.index, "End of array", "End of file")
 }
 
   handleWhitespaces() {
@@ -260,7 +286,7 @@ handleArray() {
       this.handleString();
       break;
     default:
-      this.error("Unexpected character when expecting value. " + char + " at position " + this.index);
+      this.buffer.addError(this.index, "Any Value", this.jsonText.substring(this.index, 16));
     }
   }
 
@@ -277,12 +303,12 @@ handleArray() {
       word = 'null';
       break;
     default:
-      this.error("Unknown keyword at position " + this.index);
+      this.buffer.addError(this.index, "Keyword (true, false, or null)", this.jsonText.substring(this.index, 16))
     }
 
     for(let i = 1; i < word.length; i++) {
       if(word.charAt(i) !== this.jsonText.charAt(i + this.index)) {
-        this.error("Unknown keyword at position " + this.index);
+        this.buffer.addError(this.index, `Keyword ${word}`, this.jsonText.substring(this.index, 16))
         break;
       }
     }
@@ -331,7 +357,10 @@ handleArray() {
         number += char + sign;
         this.index++;
       } else {
-        this.error("Expected sign to come after the exp on the number, got " + sign + "instead at position " + this.index);
+        this.buffer.addError(this.index, 
+            "Sign (negative or positive)",
+            '<b>' + number  + '</b>' + this.jsonText.substring(this.index, 16)
+          );
       }
 
       number += this.handleOneStarDigits();
@@ -377,7 +406,7 @@ handleArray() {
           break;
         default:
           if(digits === '') {
-            this.error("Unable to parse number near position " + i);
+            this.buffer.addError(this.index, "Digit (0-9)", `${digit}<b>${char}</b>` + this.jsonText.substring(this.index + 1, 16))
           } else {
             return digits;
           }
@@ -413,7 +442,8 @@ handleArray() {
       escaped = !escaped && char === '\\';
     }
 
-    this.error("Reached end of file while expecting end of string");
+    this.buffer.addNewLine('"' + str, className);
+    this.buffer.addError(this.index, "End of string", "End of file");
   }
 
 

@@ -1,8 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Mono&display=swap');
+
+:root {
+	color-scheme: dark;
+	--green: #5EBD3E;
+	--yellow: #FFB900;
+	--orange: #F78200;
+	--red: #E23838;
+	--purple: #973999;
+	--blue: #009CDF;
+	--dark-grey: #2f2f2f;
+	--bar-height: 40px;
+}
+
 footer {
-	height: 40px;
-	background: #ddd;
+	height: var(--bar-height);
+	background: var(--dark-grey);
 	font-family: sans-serif;
-	color: #333;
+	color: #777;
 	position: absolute;
 	left: 0;
 	right: 0;
@@ -15,11 +29,12 @@ footer p {
 
 main {
 	position:absolute;
-	top:0; /* Must be same as header height */
+	top:0; 
 	left: 0;
 	right: 0;
 	bottom: 40px;
 	overflow: scroll;
+	background-color: #222;
 }
 
 main #layer-group {
@@ -44,9 +59,10 @@ main pre {
 	line-height: 1.2em;
 	padding: 10px;
 	outline: none;
-	font-family: "Consolas", monospace;
+	font-family: 'Red Hat Mono', monospace;
 	align-self: stretch;
 	user-select: none;
+	tab-size: 4;
 }
 
 #wrapper {
@@ -60,10 +76,10 @@ main pre {
 	padding-left: 14px;
 	min-width: 24px;
 	width: auto;
-	color: #888;
+	color: #555555;
 	border-width: 0 1px 0 0;
 	border-style: solid;
-	border-color: #CCC;
+	border-color: #111;
 	text-align: right;
 	user-select: none;
 }
@@ -94,23 +110,23 @@ main pre {
 }
 
 #punctuation {
-	color: #777;
+	color: #AAA;
 }
 
 #attr { 
-	color: #F78200;
+	color: var(--green);
 }
 
 #string {
-	color: #5EBD3E;
+	color: var(--orange);
 }
 
 #number {
-	color: #009CDF;
+	color: var(--yellow);
 }
 
 #literal {
-	color: #973999;
+	color: var(--blue);
 }
 
 main #layer-group pre#error-notification {
@@ -127,6 +143,6 @@ main #layer-group pre#error-notification {
 	color: #555;
 }
 
-pre#error-notification strong{
+pre#error-notification strong {
 	color: #E23838;
 }

@@ -46,7 +46,7 @@ window.onload = function(e) {
         e.preventDefault();
     });
 
- 	parseJson('{"success":true,"instructions":"Paste your JSON here","warning":"This code is on the *very* early development stages"}');
+ 	parseJson('{"success":true,"instructions":"Paste your JSON here","warning":"This code is on the *very* early development stages","version":0.4}');
 };
 
 /**

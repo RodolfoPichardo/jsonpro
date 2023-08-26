@@ -112,14 +112,30 @@ var parseJson = function(json) {
 	};
 
 	const lines = document.getElementById("lines");
+	const error = document.getElementById("error-notification");
+	error.style.display = "none";
 
     if (window.Worker) {
         const jsonParserWorker = new Worker("files/scripts/worker.js");
         jsonParserWorker.onmessage = function(e) {
+        	
             for(const prop in e.data.data) {
             	doms[prop].append(e.data.data[prop]);
             }
             displayLines(lines, e.data.lines);
+
+            if(!e.data.success) {
+        		error.innerHTML =
+        			"<strong>Position:</strong> " + e.data.error.position + "<br>" +
+        			"<strong>Expected:</strong> " + e.data.error.expected + "<br>" +
+        			"<strong>Actual:</strong> " + e.data.error.actual;
+        		error.style.display = "block";
+
+        		doms.code.append('\n\n\n\n');
+
+        		// todo scroll down
+        	}
+
         };
         
         jsonParserWorker.postMessage(json);

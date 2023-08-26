@@ -5,8 +5,8 @@ onmessage = function(e) {
     parser.run();
     parser.sendBuffer();
   } catch(error) {
+    console.error(error);
     parser.sendBuffer();
-
   }
 }
 
@@ -78,10 +78,11 @@ class Buffer {
   }
 
   addError(position, expecting, actual) {
+    this.success = false;
     this.error = {
       position: position,
-      expecting: expecting,
-      actual: actual
+      expected: expecting,
+      actual: actual.replaceAll('\n', '')
     }
 
     throw Error(`Error parsing JSON at position ${position}, expecting: "${expecting}", actual: "${actual}"`)
@@ -135,7 +136,7 @@ class JSONParser {
       default:
         this.buffer.addError(this.index, 
             "Start of array (square bracket) or start of object (curly bracket)",
-            '<b>' + this.jsonText.charAt(this.index)  + '</b>' + this.jsonText.substring(this.index + 1, 16)
+            '<b>' + this.jsonText.charAt(this.index)  + '</b>' + this.jsonText.substring(this.index + 1, this.index + 16)
         );
     }
 
@@ -160,7 +161,7 @@ class JSONParser {
         } else if(char !== ',') {
           this.buffer.addError(this.index, 
             "Value separator (comma)",
-            `<b>${char}</b>` + this.jsonText.substring(this.index + 1, 16)
+            `<b>${char}</b>` + this.jsonText.substring(this.index + 1, this.index + 16)
           );
         } else {
           this.buffer.addNewLine(',', 'punctuation');
@@ -178,7 +179,7 @@ class JSONParser {
         if(this.jsonText.charAt(this.index) !== ':') {
           this.buffer.addError(this.index, 
             "Member separator (colon)",
-            '<b>' + this.jsonText.charAt(this.index)  + '</b>' + this.jsonText.substring(this.index + 1, 16)
+            '<b>' + this.jsonText.charAt(this.index)  + '</b>' + this.jsonText.substring(this.index + 1, this.index + 16)
           );
         }
         
@@ -194,7 +195,7 @@ class JSONParser {
         this.sendBufferIfFull();
         return;
       default:
-        this.buffer.addError(this.index, "New member or end of object", this.jsonText.substring(this.index, 16)) 
+        this.buffer.addError(this.index, "New member or end of object", this.jsonText.substring(this.index, this.index + 16)) 
       }
     }
   }
@@ -221,7 +222,7 @@ handleArray() {
         this.index++;
         this.handleWhitespaces();
       } else {
-        this.buffer.addError(this.index, "Value separator (comma)", this.jsonText.substring(this.index, 16));
+        this.buffer.addError(this.index, "Value separator (comma)", this.jsonText.substring(this.index, this.index + 16));
       } 
     }
     this.handleValue();
@@ -286,7 +287,7 @@ handleArray() {
       this.handleString();
       break;
     default:
-      this.buffer.addError(this.index, "Any Value", this.jsonText.substring(this.index, 16));
+      this.buffer.addError(this.index, "Any Value", this.jsonText.substring(this.index, this.index + 16));
     }
   }
 
@@ -303,12 +304,12 @@ handleArray() {
       word = 'null';
       break;
     default:
-      this.buffer.addError(this.index, "Keyword (true, false, or null)", this.jsonText.substring(this.index, 16))
+      this.buffer.addError(this.index, "Keyword (true, false, or null)", this.jsonText.substring(this.index, this.index + 16))
     }
 
     for(let i = 1; i < word.length; i++) {
       if(word.charAt(i) !== this.jsonText.charAt(i + this.index)) {
-        this.buffer.addError(this.index, `Keyword ${word}`, this.jsonText.substring(this.index, 16))
+        this.buffer.addError(this.index, `Keyword ${word}`, this.jsonText.substring(this.index, this.index + 16))
         break;
       }
     }
@@ -359,7 +360,7 @@ handleArray() {
       } else {
         this.buffer.addError(this.index, 
             "Sign (negative or positive)",
-            '<b>' + number  + '</b>' + this.jsonText.substring(this.index, 16)
+            '<b>' + number  + '</b>' + this.jsonText.substring(this.index, this.index + 16)
           );
       }
 
@@ -406,7 +407,7 @@ handleArray() {
           break;
         default:
           if(digits === '') {
-            this.buffer.addError(this.index, "Digit (0-9)", `${digit}<b>${char}</b>` + this.jsonText.substring(this.index + 1, 16))
+            this.buffer.addError(this.index, "Digit (0-9)", `${digit}<b>${char}</b>` + this.jsonText.substring(this.index + 1, this.index + 16))
           } else {
             return digits;
           }

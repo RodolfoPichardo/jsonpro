@@ -112,3 +112,21 @@ main pre {
 #literal {
 	color: #973999;
 }
+
+main #layer-group pre#error-notification {
+	border-width: 1px 0 0 50px;
+	border-style: solid;
+	border-left-color: #E23838;
+	position: fixed;
+	bottom: 40px;
+	left: 0;
+	right: 0;
+	height: 55px;
+	min-height: initial;
+	background-color: #fff;
+	color: #555;
+}
+
+pre#error-notification strong{
+	color: #E23838;
+}

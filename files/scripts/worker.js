@@ -136,15 +136,11 @@ class JSONParser {
       default:
         this.buffer.addError(this.index, 
             "Start of array (square bracket) or start of object (curly bracket)",
-            '<b>' + this.jsonText.charAt(this.index)  + '</b>' + this.jsonText.substring(this.index + 1, this.index + 16)
+            this.jsonText.substring(this.index, this.index + 16)
         );
     }
 
     this.handleWhitespaces();
-
-    /*if(offset !== undefined && offset !== text.length) {
-      error("Unexpected character when expecting end of file: " + text.charAt(offset) + " at position " + offset);
-    }*/
   }
 
   handleObject() {
@@ -161,7 +157,7 @@ class JSONParser {
         } else if(char !== ',') {
           this.buffer.addError(this.index, 
             "Value separator (comma)",
-            `<b>${char}</b>` + this.jsonText.substring(this.index + 1, this.index + 16)
+            his.jsonText.substring(this.index, this.index + 16)
           );
         } else {
           this.buffer.addNewLine(',', 'punctuation');

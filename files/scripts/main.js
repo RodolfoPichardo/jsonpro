@@ -136,7 +136,8 @@ var parseJson = function(json) {
 
         		doms.code.append('\n\n\n\n');
 
-        		// TODO scroll down
+        		error.scrollIntoView(false);
+        		console.log(error.parentElement.scrollHeight)
         	}
 
         };

@@ -2,12 +2,12 @@
 
 :root {
 	color-scheme: dark;
-	--green: #5EBD3E;
-	--yellow: #FFB900;
-	--orange: #F78200;
-	--red: #E23838;
-	--purple: #973999;
-	--blue: #009CDF;
+	--green: #85cf6d;
+	--yellow: #ffcb40;
+	--orange: #ffa23a;
+	--red: #e96a6a;
+	--purple: #c05bc2;
+	--blue: #28beff;
 	--dark-grey: #2f2f2f;
 	--bar-height: 40px;
 }

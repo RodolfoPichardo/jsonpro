@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Mono:ital@0;1&display=swap');
 
 :root {
 	color-scheme: dark;
@@ -129,20 +129,8 @@ main pre {
 	color: var(--blue);
 }
 
-main #layer-group pre#error-notification {
-	border-width: 1px 0 0 50px;
-	border-style: solid;
-	border-left-color: #E23838;
-	position: fixed;
-	bottom: 40px;
-	left: 0;
-	right: 0;
-	height: 55px;
-	min-height: initial;
-	background-color: #fff;
-	color: #555;
+#error-notification {
+	color: var(--red);
+	font-style: italic;
 }
 
-pre#error-notification strong {
-	color: #E23838;
-}

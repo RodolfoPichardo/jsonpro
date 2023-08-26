@@ -80,7 +80,7 @@ class Buffer {
   addError(position, expecting, actual) {
     this.success = false;
     this.error = {
-      position: position,
+      position: this.position + this.indent_level * 4,
       expected: expecting,
       actual: actual.replaceAll('\n', '')
     }

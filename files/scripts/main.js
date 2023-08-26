@@ -113,7 +113,7 @@ var parseJson = function(json) {
 
 	const lines = document.getElementById("lines");
 	const error = document.getElementById("error-notification");
-	error.style.display = "none";
+	error.innerHTML = "";
 
     if (window.Worker) {
         const jsonParserWorker = new Worker("files/scripts/worker.js");
@@ -125,15 +125,18 @@ var parseJson = function(json) {
             displayLines(lines, e.data.lines);
 
             if(!e.data.success) {
-        		error.innerHTML =
-        			"<strong>Position:</strong> " + e.data.error.position + "<br>" +
-        			"<strong>Expected:</strong> " + e.data.error.expected + "<br>" +
-        			"<strong>Actual:</strong> " + e.data.error.actual;
-        		error.style.display = "block";
+            	const position = e.data.error.position;
+            	const center_offset_for_error = Math.max(0, position - ((e.data.error.expected.length + 9) / 2))
+
+            	const str = '\n'.repeat(e.data.lines -1) + ' '.repeat(position) + '<s>' + e.data.error.actual + '</s>\n' +
+            				' '.repeat(position) + '^\n' +
+            				' '.repeat(center_offset_for_error) + 'Expected ' + e.data.error.expected + '\n';
+
+        		error.innerHTML = str;
 
         		doms.code.append('\n\n\n\n');
 
-        		// todo scroll down
+        		// TODO scroll down
         	}
 
         };

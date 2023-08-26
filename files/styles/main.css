@@ -2,13 +2,26 @@
 
 :root {
 	color-scheme: dark;
-	--green: #85cf6d;
+	/*--green: #85cf6d;
 	--yellow: #ffcb40;
 	--orange: #ffa23a;
 	--red: #e96a6a;
 	--purple: #c05bc2;
-	--blue: #28beff;
-	--dark-grey: #2f2f2f;
+	--blue: #28beff;*/
+
+	--white: #F8F8F2;
+	--yellow: #E6DB74;
+	--green: #A4E228;
+	--orange: #FD971F;
+	--purple: #AE81FF;
+	--pink: #fa518e;
+	--blue: #66D9EF;
+	--black: #171e21;
+	--true-black: #101517;
+	--grey: #58737f;
+	--red: #CD1B38;
+	--dark-grey: #1f2529;
+	--selection-grey: #283439;
 	--bar-height: 40px;
 }
 
@@ -23,6 +36,14 @@ footer {
 	bottom: 0;
 }
 
+footer img {
+	padding: 8px 12px;
+  filter: grayscale(100%);
+  opacity: 0.4;
+  height: 24px;
+  width: 24px;
+}
+
 footer p {
 	padding: 10px 20px;
 }
@@ -34,7 +55,7 @@ main {
 	right: 0;
 	bottom: 40px;
 	overflow: scroll;
-	background-color: #222;
+	background-color: var(--black);
 }
 
 main #layer-group {
@@ -76,10 +97,10 @@ main pre {
 	padding-left: 14px;
 	min-width: 24px;
 	width: auto;
-	color: #555555;
+	color:var(--grey);
 	border-width: 0 1px 0 0;
 	border-style: solid;
-	border-color: #111;
+	border-color: var(--true-black);
 	text-align: right;
 	user-select: none;
 }
@@ -87,21 +108,21 @@ main pre {
 #code {
 	flex: 1;
 	color: rgba(0, 0, 0, 0);
-	caret-color: #222;
+	caret-color: #8899AA;
 	z-index: 9999;
 	user-select: text;
 	min-width: calc(100% - 90px);
 }
 
 #code::-moz-selection { /* Code for Firefox */
-  color: #222;
-  background-color: #bbb;
+  /*color: var(--white);*/
+  background-color: rgba(255,255,255,0.1); /*var(--selection-grey);*/
   border: 1px solid #777;
 }
 
 #code::selection {
-  color: #222;
-  background-color: #bbb;
+  /*color: var(--white);*/
+  background-color: rgba(255,255,255,0.2);
   border: 1px solid #777;
 }
 
@@ -110,27 +131,27 @@ main pre {
 }
 
 #punctuation {
-	color: #AAA;
+	color: var(--white);
 }
 
 #attr { 
-	color: var(--green);
+	color: var(--pink);
 }
 
 #string {
-	color: var(--orange);
+	color: var(--yellow);
 }
 
 #number {
-	color: var(--yellow);
+	color: var(--purple);
 }
 
 #literal {
 	color: var(--blue);
 }
 
-#error-notification {
-	color: var(--red);
-	font-style: italic;
+#error-notification span {
+	background-color: var(--red);
+	color: var(--white);
 }
 

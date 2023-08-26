@@ -129,8 +129,8 @@ var parseJson = function(json) {
             	const center_offset_for_error = Math.max(0, position - ((e.data.error.expected.length + 9) / 2))
 
             	const str = '\n'.repeat(e.data.lines -1) + ' '.repeat(position) + '<s>' + e.data.error.actual + '</s>\n' +
-            				' '.repeat(position) + '^\n' +
-            				' '.repeat(center_offset_for_error) + 'Expected ' + e.data.error.expected + '\n';
+            				' '.repeat(position) + '<span>^</span>\n' +
+            				' '.repeat(center_offset_for_error) + '<span>Expected ' + e.data.error.expected + '</span>\n';
 
         		error.innerHTML = str;
 

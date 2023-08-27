@@ -129,7 +129,7 @@ class JSONParser {
         this.handleObject();
         break;
       case '[':
-        this.buffer.add('[', 'punctuation'); // FIXME don't add new line
+        this.buffer.addNewLine('[', 'punctuation', true); // FIXME don't add new line
         this.index++;
         this.handleArray();
         break;
@@ -179,7 +179,7 @@ class JSONParser {
           );
         }
         
-        this.buffer.add(':', 'punctuation');
+        this.buffer.add(': ', 'punctuation');
         this.index++;
         this.handleWhitespaces();
         this.handleValue();
@@ -207,14 +207,14 @@ handleArray() {
   for(; this.index < this.jsonText.length;){// i++) {
     const char = this.jsonText.charAt(this.index);
     if(char === ']') {
-      this.buffer.add(']', 'punctuation');
+      this.buffer.addNewLineBefore(']', 'punctuation');
       this.sendBufferIfFull();
       this.index++;
       return;
     }
     if(expectValueSeparator) {
       if(char === ',') {
-        this.buffer.add(',', 'punctuation');
+        this.buffer.addNewLine(',', 'punctuation');
         this.index++;
         this.handleWhitespaces();
       } else {
@@ -261,7 +261,7 @@ handleArray() {
       this.handleObject();
       break;
     case '[':
-      this.buffer.add('[', 'punctuation');
+      this.buffer.addNewLine('[', 'punctuation', true);
       this.index++;
       this.handleArray();
       break;

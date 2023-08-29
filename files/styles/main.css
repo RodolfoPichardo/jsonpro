@@ -52,10 +52,10 @@ footer img {
   box-sizing: border-box;
 }
 .search {
-	display: inline-block;
   width: 320px;
   position: relative;
-  top: -16px;
+  float: right;
+  margin: 4px 8px;
   cursor: pointer;
 	user-select: none;
 }

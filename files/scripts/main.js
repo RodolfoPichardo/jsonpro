@@ -11,13 +11,15 @@ window.onload = function(e) {
 	});
 
 	editor.addEventListener('keydown', function(event) {
+		let keyCode = e.keyCode || e.which;
+
 		// TODO SCROLL
 	    if (event.keyCode == 13) { // Enter key
 	    	/*const newLine = isChrome? '\n\n': '\n';
 	    	document.execCommand('insertHTML', false, newLine);*/
 	    	event.preventDefault();
 	    	return false;
-	    } else if(event.ctrlKey || event.keyCode >= 33 && event.keyCode <= 40 || event.key === 'F11') {
+	    } else if(event.ctrlKey || keyCode >= 33 && keyCode <= 40 || event.key === 'F11') {
 	    	; // Allow things to happen
 	    } else {
 	    	event.preventDefault();

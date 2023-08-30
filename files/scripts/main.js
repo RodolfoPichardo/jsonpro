@@ -17,7 +17,7 @@ window.onload = function(e) {
 	    	document.execCommand('insertHTML', false, newLine);*/
 	    	event.preventDefault();
 	    	return false;
-	    } else if(event.ctrlKey || event.keyCode >= 33 && event.keyCode <= 40) {
+	    } else if(event.ctrlKey || event.keyCode >= 33 && event.keyCode <= 40 || event.key === 'F11') {
 	    	; // Allow things to happen
 	    } else {
 	    	event.preventDefault();

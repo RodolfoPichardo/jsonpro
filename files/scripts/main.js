@@ -49,6 +49,11 @@ window.onload = function(e) {
     });
 
  	parseJson('{"success":true,"instructions":"Paste your JSON here","warning":"This code is on the *very* early development stages","version":0.4}');
+
+ 	document.getElementsByClassName("search")[0].addEventListener("click", function(){
+ 		document.getElementById("search-nook").style.display = 'block';
+ 		document.getElementById("query").focus();
+ 	});
 };
 
 /**

@@ -50,9 +50,18 @@ window.onload = function(e) {
 
  	parseJson('{"success":true,"instructions":"Paste your JSON here","warning":"This code is on the *very* early development stages","version":0.4}');
 
- 	document.getElementsByClassName("search")[0].addEventListener("click", function(){
- 		document.getElementById("search-nook").style.display = 'block';
- 		document.getElementById("query").focus();
+ 	let searchButton = document.getElementsByClassName("search")[0];
+ 	let searchNook = document.getElementById("search-nook");
+ 	let queryInput = document.getElementById("query");
+ 	let queryButton = document.getElementById("query-button");
+ 	searchButton.addEventListener("click", function(){
+ 		searchNook.style.display = 'block';
+ 		queryInput.focus();
+ 	});
+
+ 	queryButton.addEventListener("click", function(){
+ 		let query = QSONparse(queryInput.value);
+ 		console.log(query);
  	});
 };
 

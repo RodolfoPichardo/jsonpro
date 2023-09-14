@@ -1,14 +1,11 @@
-### 🚀 Lint, Beautify, and Filter... Fast 🚀
+## JSONPro
 
-A tool designed to be able to handle a big JSON dataset with ease, it allows you to quickly test your JSON, see it parsed, and search through it. 
+JSON deserves better, JSON deserves pro.
 
-#### 🎯 Features:
+### Background
+A JSON linter, beautifier, and browser. It validates your JSON, improves readability, and allow you to easily traverse your JSON.
 
-- Instant linting: just paste your JSON and done
-- Clean interface: no ads, just a humble editor
-- Powerful filtering: make sense of complex code by selecting what you want to see
-- Secure JSON: your data never leaves your browser
-  
-#### 🚀 Try JSON Pro now and see the difference.
+### Contributing
+Put in an issue, be thourough, and let's take it from there.
 
-Visit jsonpro.net
+Visit [jsonpro.net](jsonpro.net)

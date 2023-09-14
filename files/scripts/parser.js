@@ -1,7 +1,3 @@
-class QSONParser extends JSONParser {
-
-}
-
 class JSONParser {
   constructor(str, output) {
     this.jsonText = str;
@@ -40,55 +36,75 @@ class JSONParser {
   handleObject() {
     this.handleWhitespaces();
 
-    let expectValueSeparator = false;
+    if(this.#isEndObject()) {
+      this.#handleEndObject();
+      return;
+    }
+
+    this.handleMember();
+
     for(; this.index < this.jsonText.length;) {
       this.handleWhitespaces();
-      let char = this.jsonText.charAt(this.index);
-      if(expectValueSeparator) {
-        
-        if(char === '}') {
-
-        } else if(char !== ',') {
-          this.output.addError(this.index, 
-            "Value separator (comma)",
-            his.jsonText.substring(this.index, this.index + 16)
-          );
-        } else {
-          this.output.valueSeparator();
-          this.index++;
-          this.handleWhitespaces();
-          char = this.jsonText.charAt(this.index);
-        }
-      }
-      
-      switch(char) {
-      case '"': // New key value
-        this.index++;
-        this.handleKey();
-        this.handleWhitespaces();
-        if(this.jsonText.charAt(this.index) !== ':') {
-          this.output.addError(this.index, 
-            "Member separator (colon)",
-            '<b>' + this.jsonText.charAt(this.index)  + '</b>' + this.jsonText.substring(this.index + 1, this.index + 16)
-          );
-        }
-        
-        this.output.nameSeparator();
-        this.index++;
-        this.handleWhitespaces();
-        this.handleValue();
-        expectValueSeparator = true;
-        break;
-      case "}": // End of object
-        this.output.endObject();
-        this.index++;
-        this.sendBufferIfFull();
+      if(this.#isEndObject()) {
+        this.#handleEndObject();
         return;
-      default:
-        this.output.addError(this.index, "New member or end of object", this.jsonText.substring(this.index, this.index + 16)) 
       }
+
+      this.#handleValueSeparator();
+      this.handleWhitespaces();
+      this.#handleMember();
     }
   }
+
+  #isEndObject() {
+    return this.jsonText.charAt(this.index) === '}';
+  }
+
+  #handleEndObject() {
+    this.output.endObject();
+    this.index++;
+    this.sendBufferIfFull();
+  }
+
+  #handleValueSeparator() {
+    const char = this.jsonText.charAt(this.index);
+    if(char !== ',') {
+      this.output.addError(this.index, 
+        "Value separator (comma)",
+        this.jsonText.substring(this.index, this.index + 16)
+      );
+      return;
+    }
+
+    this.output.valueSeparator();
+    this.index++;
+    this.handleWhitespaces();
+  }
+
+  #handleMember() {
+    const char = this.jsonText.charAt(this.index);
+    if(char != '"') {
+      this.output.addError(this.index, "New member or end of object", this.jsonText.substring(this.index, this.index + 16));
+      return;
+    }
+
+    this.index++;
+    this.handleKey();
+    this.handleWhitespaces();
+    if(this.jsonText.charAt(this.index) !== ':') {
+      this.output.addError(this.index, 
+        "Member separator (colon)",
+        '<b>' + this.jsonText.charAt(this.index)  + '</b>' + this.jsonText.substring(this.index + 1, this.index + 16)
+      );
+    }
+    
+    this.output.nameSeparator();
+    this.index++;
+    this.handleWhitespaces();
+    this.handleValue();
+  }
+
+
 
   /**
  * Parse JSON Array
@@ -341,4 +357,3 @@ handleArray() {
   }
 
 }
-

@@ -1,0 +1,3 @@
+[submodule "third-party/qson"]
+	path = third-party/qson
+	url = git@github.com:RodolfoPichardo/QSON.git

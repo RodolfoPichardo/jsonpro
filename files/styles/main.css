@@ -47,65 +47,6 @@ footer img {
   margin: 0;
 }
 
-.search,
-.search * {
-  box-sizing: border-box;
-}
-.search {
-  width: 320px;
-  position: relative;
-  float: right;
-  margin: 4px 8px;
-  cursor: pointer;
-	user-select: none;
-}
-
-.input {
-  background: var(--black);
-  border-radius: 8px;
-  border-style: solid;
-  border-color: var(--true-black);
-  border-width: 1px;
-  padding: 6px 8px;
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  align-items: center;
-  justify-content: flex-start;
-  position: relative;
-  box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
-  overflow: hidden;
-}
-.content {
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  align-items: center;
-  justify-content: flex-start;
-  flex: 1;
-  position: relative;
-}
-.glass {
-  flex-shrink: 0;
-  position: relative;
-  overflow: visible;
-}
-.text {
-  text-align: left;
-  font: 400 12px/18px "Inter", sans-serif;
-  position: relative;
-  flex: 1;
-}
-
-.text span {
-	outline-offset: 2px;
-	outline-style: solid;
-	outline-width: 1px;
-	border-radius: 0.5px;
-	margin: 0 6px;
-	padding: 0 2px;
-}
-
 
 footer p {
 	padding: 10px 20px;
@@ -217,23 +158,4 @@ main pre {
 #error-notification span {
 	background-color: var(--red);
 	color: var(--white);
-}
-
-#search-nook {
-	background-color: var(--black);
-	border-radius: 8px;
-	width: calc(100% - 16px);
-	max-width: 480px;
-	position: fixed;
-	bottom: 4px;
-	right: 8px;
-	box-shadow: 0 0 8px var(--true-black);
-	z-index: 10000;
-	padding: 8px;
-	display: none;
-
-}
-
-#query {
-	width: calc(100% - 48px);
 }

@@ -50,6 +50,7 @@ window.onload = function(e) {
 
  	parseJson('{"success":true,"instructions":"Paste your JSON here","warning":"This code is on the *very* early development stages","version":0.4}');
 
+	 /*
  	let searchButton = document.getElementsByClassName("search")[0];
  	let searchNook = document.getElementById("search-nook");
  	let queryInput = document.getElementById("query");
@@ -62,7 +63,7 @@ window.onload = function(e) {
  	queryButton.addEventListener("click", function(){
  		let query = QSONparse(queryInput.value);
  		console.log(query);
- 	});
+ 	});*/
 };
 
 /**

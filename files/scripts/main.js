@@ -20,7 +20,7 @@ window.onload = function(e) {
 	    	event.preventDefault();
 	    	return false;
 	    } else if(event.ctrlKey || keyCode >= 33 && keyCode <= 40 || event.key === 'F11') {
-	    	; // Allow things to happen
+	    	 // Allow things to happen
 	    } else {
 	    	event.preventDefault();
 	    	return false;
@@ -133,10 +133,9 @@ var parseJson = function(json) {
 	error.innerHTML = "";
 
     if (window.Worker) {
-        const jsonParserWorker = new Worker("files/scripts/worker.js");
-        jsonParserWorker.onmessage = function(e) {
-        	
-            for(const prop in e.data.data) {
+        const jsonParserWorker = new Worker("files/scripts/worker.js", { type: 'module' });
+		jsonParserWorker.onmessage = (e) => {
+			for(const prop in e.data.data) {
             	doms[prop].append(e.data.data[prop]);
             }
             displayLines(lines, e.data.lines);
@@ -158,7 +157,7 @@ var parseJson = function(json) {
         	}
 
         };
-        
+
         jsonParserWorker.postMessage(json);
     } 
 };

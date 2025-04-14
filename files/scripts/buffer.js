@@ -25,11 +25,11 @@ class Buffer{
     }
 
     beginArray() {
-        this.add('[', 'punctuation');
+        this.addNewLine('[', 'punctuation', true);
     }
 
     endArray() {
-        this.add(']', 'punctuation');
+        this.addNewLineBefore(']', 'punctuation');
     }
 
     valueSeparator() {

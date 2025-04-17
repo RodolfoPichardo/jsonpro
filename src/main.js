@@ -133,7 +133,7 @@ var parseJson = function(json) {
 	error.innerHTML = "";
 
     if (window.Worker) {
-        const jsonParserWorker = new Worker("files/scripts/worker.js", { type: 'module' });
+        const jsonParserWorker = new Worker("src/scripts/worker.js", { type: 'module' });
 		jsonParserWorker.onmessage = (e) => {
 			for(const prop in e.data.data) {
             	doms[prop].append(e.data.data[prop]);

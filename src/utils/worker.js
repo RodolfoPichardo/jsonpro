@@ -1,5 +1,5 @@
 import JSONParser from '../../third-party/qson/src/parser.js';
-import Buffer from "../../files/scripts/buffer.js";
+import Buffer from "../datastructures/buffer.js";
 
 self.onmessage = (e) => {
     const text = e.data;

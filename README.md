@@ -1,4 +1,4 @@
-![Unit tests](https://github.com/RodolfoPichardo/QSON/actions/workflows/node.js.yml/badge.svg)
+![Unit tests](https://github.com/RodolfoPichardo/jsonpro/actions/workflows/node.js.yml/badge.svg)
 
 ## JSONPro
 

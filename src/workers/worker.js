@@ -1,4 +1,4 @@
-import JSONTokenizer from './json-tokenizer.js';
+import JSONTokenizer from '../tokenizers/json-tokenizer.js';
 import Buffer from "../datastructures/buffer.js";
 
 self.onmessage = (e) => {

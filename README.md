@@ -1,6 +1,8 @@
+![Unit tests](https://github.com/RodolfoPichardo/QSON/actions/workflows/node.js.yml/badge.svg)
+
 ## JSONPro
 
-JSON deserves better, JSON deserves pro.
+JSONPro: the *no-bullshit* JSON linter
 
 ### Background
 A JSON linter, beautifier, and browser. It validates your JSON, improves readability, and allow you to easily traverse your JSON.

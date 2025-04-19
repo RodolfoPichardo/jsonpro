@@ -1,5 +1,8 @@
-class Buffer{
+import BufferInterface from "./buffer-interface.js";
+
+class Buffer extends BufferInterface {
     constructor() {
+        super();
         this.success = true;
         this.error = null;
         this.indent_level = 0;

@@ -1,6 +1,6 @@
 import FixedSizeQueue from "./fixed-size-queue";
 
-class RenderBuffer {
+class JSONRenderBuffer {
     constructor() {
         this.queue = new FixedSizeQueue(8);
     }
